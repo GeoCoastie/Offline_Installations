@@ -1,0 +1,28 @@
+# Below is a API Password fixt for an API connection error after a borked update.
+## Reading through the  steps below may help your issue.
+
+
+Wazuh Fix for API Indexer error
+-------------------------------
+root@cs-wazuh:/home/<user># nano /usr/share/wazuh-dashboard/data/wazuh/config/wazuh.yml
+root@cs-wazuh:/home/<user># root@cs-wazuh:/home/<user># /var/ossec/framework/python/bin/python3
+Python 3.10.15 (main, Sep 19 2024, 15:07:08) [GCC 9.4.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> from wazuh.security import update_user
+>>> update_user(user_id="1", password="NewPassword1!").render()
+{'data': {'affected_items': [{'id': 1, 'username': 'wazuh', 'allow_run_as': True, 'roles': [1]}], 'total_affected_items': 1, 'total_failed_items': 0, 'failed_items': []}, 'message': 'User was successfully updated', 'error': 0}
+Use exit() or Ctrl-D (i.e. EOF) to exit
+>>>
+root@cs-wazuh:/home/<user># bash /usr/share/wazuh-indexer/plugins/opensearch-security/tools/wazuh-passwords-tool.sh --api -u wazuh-wui -p Wazuh-wui1 --admin-user wazuh --admin-password NewPassword1!
+19/08/2025 21:43:00 INFO: The password for Wazuh API user wazuh-wui is Wazuh-wui1
+19/08/2025 21:43:00 INFO: Updated wazuh-wui user password in wazuh dashboard. Remember to restart the service.
+-----------------------------
+
+The above will run python to change wazuh admin password (line6-8), then with the new password you will set the wazuh-wui password (line12)
+
+
+--------------------
+sudo bash wazuh-passwords-tool.sh --api -u filebeat -p NewPassword1! --admin-user wazuh --admin-password NewPassword1!
+
+ bash /usr/share/wazuh-indexer/plugins/opensearch-security/tools/wazuh-passwords-tool.sh --change-all --admin-user wazuh --admin-password NewPassword1!
+
